@@ -48,22 +48,22 @@ class OfflineMessageManager(models.Manager):
     def get_queryset(self):
         return OfflineMessageQuerySetManager(self.model)
 
-    def __getattr__(self, name):
-        try:
-            return getattr(self, name)
-        except AttributeError:
-            return getattr(self.get_queryset(), name)
-
+    # def __getattr__(self, name):
+    #     try:
+    #         return getattr(self, name)
+    #     except AttributeError:
+    #         return getattr(self.get_queryset(), name)
+    #
 
 class OfflineMessage(models.Model):
-    user = models.ForeignKey(AUTH_USER_MODEL)
+    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
     level = models.IntegerField(default=constants.INFO)
     message = models.CharField(max_length=200)
     created = models.DateTimeField(auto_now_add=True)
 
     read = models.BooleanField(default=False)
 
-    content_type = models.ForeignKey(ContentType, blank=True, null=True)
+    content_type = models.ForeignKey(ContentType, blank=True, null=True, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField(blank=True, null=True)
     content_object = GenericForeignKey('content_type', 'object_id')
 
@@ -71,8 +71,8 @@ class OfflineMessage(models.Model):
 
     objects = OfflineMessageManager()
 
-    def __unicode__(self):
-        return force_unicode(self.message)
+    def __str__(self):
+        return self.message
 
     @property
     def tags(self):
